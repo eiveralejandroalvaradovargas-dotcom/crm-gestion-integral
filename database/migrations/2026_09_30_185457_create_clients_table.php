@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('nombre_empresa', 150);
             $table->string('contacto_principal', 100);
-            $table->string('telefono_whasapp', 100);
+            $table->string('telefono_whatsapp', 100);
             $table->enum('zona_geografica', ['oeste','este','cabudare','centro','Zona Industrial']);
-            $table->unsignedBigInterger('user_id')->nullable();
-            $table->unsignedBigInterger('origin_id')->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->unsignedBigInteger('origin_id')->nullable();
             $table->timestamps();
         });
     }
