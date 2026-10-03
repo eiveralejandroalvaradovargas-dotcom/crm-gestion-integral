@@ -10,34 +10,54 @@ class ReportController extends Controller
     public function clientesPorZona()
     {
         // 1. Consulta con Query Builder
+
+        // Inicia consulta sobre la tabla clients
         $zonas = DB::table('clients') // ← HUECO A
+
+        // Selecciona la zona y cuenta cuántos clientes hay por zona
         ->select(
             'zona_geografica', // ← HUECO B
             DB::raw('COUNT(*) as total') // ← HUECO C
         )
-        ->groupBy('zona_geografica') // ← HUECO D
-        ->orderByDesc('total') // ← HUECO E
-        ->get(); // ← HUECO F
-        // 2. Total general
-        $totalGeneral = $zonas->sum('total'); // ← HUECO G
-        // 3. Agregar porcentaje
-        $zonasConPorcentaje = $zonas->map(function ($zona) use ($totalGeneral) {
-        // ← HUECO H
-        $zona->porcentaje = $totalGeneral > 0
-        ? round(($zona->total/ $totalGeneral) * 100, 2) // ← HUECO I
-        : 0;
-        return $zona; // ← HUECO J
-        });
-        // Reto 1
-        $zonasConPorcentaje = $zonasConPorcentaje->filter(function ($zona) {
-            return $zona->porcentaje > 15;
-        });
 
-            // 4. Datos para gráfico
-            $labels = $zonasConPorcentaje->pluck('zona_geografica')->toArray(); // ←HUECO K
-            $data = $zonasConPorcentaje->pluck('total')->toArray(); // ← HUECO L
-            return view('reports.zonas', compact('zonasConPorcentaje', 'totalGeneral', 'labels', 'data'
-        ));
+        // Agrupa los resultados por zona geográfica
+        ->groupBy('zona_geografica') // ← HUECO D
+
+        // Ordena de mayor a menor según el total
+
+        ->orderByDesc('total') // ← HUECO E
+
+        // Ejecuta la consulta y obtiene una Collection
+        ->get(); // ← HUECO F
+
+    // 2. Total general
+
+    // Suma todos los totales para obtener el total general de clientes
+    $totalGeneral = $zonas->sum('total'); // ← HUECO G
+
+    // 3. Agregar porcentaje
+
+    // Recorre cada zona para calcular su porcentaje respecto al total
+    $zonasConPorcentaje = $zonas->map(function ($zona) use ($totalGeneral) { // ← HUECO H
+
+        $zona->porcentaje = $totalGeneral > 0
+            ? round(($zona->total / $totalGeneral) * 100, 2) // ← HUECO I
+            : 0;
+        return $zona; // ← HUECO J
+    });
+
+    // 4. Datos para gráfico
+    
+    // Extrae las etiquetas (nombres de zonas) para el gráfico
+    $labels = $zonasConPorcentaje->pluck('zona_geografica')->toArray(); // ← HUECO K
+
+    // Extrae los datos (totales) para el gráfico
+    $data = $zonasConPorcentaje->pluck('total')->toArray(); // ← HUECO L
+
+    // Envía los datos a la vista reports.zonas
+    return view('reports.zonas', compact(
+        'zonasConPorcentaje', 'totalGeneral', 'labels', 'data'
+    ));
     }
 
     public function interaccionesPorAsesor()
