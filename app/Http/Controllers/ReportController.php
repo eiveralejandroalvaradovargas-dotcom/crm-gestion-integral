@@ -46,6 +46,10 @@ class ReportController extends Controller
         return $zona; // ← HUECO J
     });
 
+    // RETO 1: solo zonas con más del 15%
+    $zonasConPorcentaje = $zonasConPorcentaje->filter(function ($zona) {
+        return $zona->porcentaje > 15;
+    });
     // 4. Datos para gráfico
     
     // Extrae las etiquetas (nombres de zonas) para el gráfico
